@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Pix da Sorte @LeehFerriiOficial - Online e Profissional</title>
+<meta name="theme-color" content="#0a1b3f" />
+<style>
+  :root{
+    --bg:#0a1b3f;
+    --card:#0f274f;
+    --muted:#143369;
+    --text:#ffffff;
+    --accent:#ff7a00;
+    --accent-2:#ffb066;
+    --ok:#22c55e;
+    --sold:#b5b9c7;
+    --ghost:#7082a8;
+    --danger:#ff5a5a;
+    --shadow:0 12px 30px rgba(0,0,0,.35), 0 3px 8px rgba(0,0,0,.25);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:linear-gradient(180deg,var(--bg),#091434);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  a{color:var(--accent)}
+  header{padding:28px 16px;text-align:center;background:linear-gradient(180deg,#0d224a,rgba(13,34,74,.4));position:sticky;top:0;z-index:10;backdrop-filter:saturate(120%) blur(4px)}
+  .live-indicator{position:absolute;top:15px;left:15px;background:#22c55e;color:white;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:bold;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1} 50%{opacity:0.7}}
+  header h1{margin:0;font-size:clamp(22px,4vw,32px)}
+  header p{margin:6px 0 0 0;opacity:.9}
+  .rating{margin-top:8px}
+  .container{max-width:1100px;margin:0 auto;padding:18px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+  .grid{display:grid;gap:16px}
+  .rifa {display:grid;gap:12px}
+  .rifa h2{margin:0 0 4px 0;font-size:22px}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;font-size:14px;opacity:.95}
+  .pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);padding:6px 10px;border-radius:999px}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:6px}
+  .dot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:-1px}
+  .numbers{display:grid;gap:6px;margin-top:10px;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));}
+  @media(max-width:480px){.numbers{grid-template-columns:repeat(auto-fill,minmax(30px,1fr));gap:4px}}
+  .num{user-select:none;text-align:center;padding:8px 0;border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;border:1px solid rgba(255,255,255,.3)}
+  .num.available{background:#ffffff;color:#1a1208;border-color:#cccccc}
+  .num.selected{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#1b1208;border-color:rgba(0,0,0,.2)}
+  .num.sold{background:#22c55e;color:#ffffff;cursor:not-allowed;border-color:#16a34a}
+  .num.pending{background:#ffa500;color:#1a1208;cursor:not-allowed;border-color:#f59e0b}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .toolbar input[type="number"]{width:100px;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 10px;color:var(--text)}
+  .btn{appearance:none;border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#ff9933);color:#1a1208;box-shadow:var(--shadow)}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--text)}
+  .btn:active{transform:translateY(1px)}
+  .row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .status{font-size:13px;opacity:.9}
+  .progress{height:12px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
+  .progress>span{display:block;height:100%;background:linear-gradient(90deg,var(--ok),#86efac);width:0%}
+  .total{font-weight:800}
+  .warn{font-size:12px;opacity:.85}
+  .depo{display:grid;gap:10px}
+  .depo .item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:12px}
+  footer{margin:24px auto 28px;text-align:center;opacity:.85}
+  
+  /* PIX Info */
+  .pix-info{background:linear-gradient(135deg,var(--ok),#86efac);color:#0a1b0f;border-radius:var(--radius);padding:16px;margin:12px 0;border:2px solid #22c55e}
+  .pix-key{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.1);border-radius:8px;padding:8px 12px;margin:8px 0;font-family:monospace;font-weight:bold;font-size:16px}
+  .copy-btn{background:rgba(0,0,0,.2);border:none;color:#0a1b0f;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold}
+  .copy-btn:hover{background:rgba(0,0,0,.3)}
+  
+  /* Admin Panel */
+  .admin-panel{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,27,63,.95);z-index:1000;overflow-y:auto}
+  .admin-content{max-width:800px;margin:20px auto;background:var(--card);border-radius:var(--radius);padding:20px}
+  .admin-login{max-width:300px;margin:200px auto;background:var(--card);border-radius:var(--radius);padding:30px;text-align:center}
+  .admin-login input{width:100%;padding:12px;margin:10px 0;border:1px solid rgba(255,255,255,.3);background:transparent;color:var(--text);border-radius:8px}
+  .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:15px}
+  .admin-orders{display:grid;gap:12px}
+  .admin-order{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:15px}
+  .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .order-numbers{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
+  .order-number{background:var(--accent);color:#1a1208;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:bold}
+  .order-actions{display:flex;gap:8px;margin-top:10px}
+  .btn-success{background:var(--ok);color:#0a1b0f}
+  .btn-danger{background:var(--danger);color:white}
+  .admin-toggle{position:fixed;top:20px;right:20px;background:var(--muted);color:var(--text);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 12px;cursor:pointer;z-index:999;font-size:12px}
+  
+  .num:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<button class="admin-toggle" onclick="toggleAdmin()">⚙️ Admin</button>
+
+<div id="adminPanel" class="admin-panel">
+  <div id="adminLogin" class="admin-login">
+    <h3>Login Admin</h3>
+    
+    <!-- Campo para o email -->
+    <input type="email" id="adminEmail" placeholder="Digite o seu email" />
+    
+    <!-- Campo para a senha -->
+    <input type="password" id="adminPassword" placeholder="Digite a sua senha" />
+    
+    <!-- Botão de login -->
+    <button class="btn btn-primary" onclick="loginAdmin()" style="width:100%;margin-top:15px">
+      Entrar
+    </button>
+    
+    <!-- Cancelar volta ao site -->
+    <button class="btn btn-ghost" onclick="toggleAdmin()" style="width:100%;margin-top:8px">
+      Cancelar
+    </button>
+  </div>
+  
+  <div id="adminContent" class="admin-content" style="display:none">
+    <div class="admin-header">
+      <h2>Painel Admin</h2>
+      <button class="btn btn-danger" onclick="logoutAdmin()">Sair</button>
+    </div>
+    
+    <div class="card">
+      <h3>Pedidos Pendentes</h3>
+      <div id="adminOrders" class="admin-orders"></div>
+    </div>
+    
+    <div class="card" style="margin-top:16px">
+      <h3>Estatísticas</h3>
+      <div id="adminStats"></div>
+    </div>
+    
+    <div class="card" style="margin-top:16px">
+      <h3>Controles da Rifa</h3>
+      <div style="display:grid;gap:12px;">
+        <button class="btn btn-ghost" onclick="clearPaidNumbers()" style="background:var(--accent);color:#1a1208;">
+          🔄 Limpar Números Pagos
+        </button>
+        <button class="btn btn-danger" onclick="resetRaffle()">
+          🗑️ Resetar Rifa Completa
+        </button>
+        <button class="btn btn-primary" onclick="conductDraw()" style="background:var(--ok);color:#0a1b0f;">
+          🎲 Realizar Sorteio (1º, 2º, 3º)
+        </button>
+      </div>
+    </div>
+    
+    <div class="card" style="margin-top:16px">
+      <h3>Resultado do Sorteio</h3>
+      <div id="drawResults" style="font-size:16px;line-height:1.6;">
+        <p style="opacity:0.7">Nenhum sorteio realizado ainda</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="live-indicator">🔴 AO VIVO</div>
+  <h1>Pix da Sorte @LeehFerriiOficial — Online e Profissional</h1>
+  <p>Sorteio automático às 18h do dia seguinte após esgotar os números.</p>
+  <div class="rating">⭐⭐⭐⭐⭐ Avaliação máxima</div>
+</header>
+
+<div class="container">
+  <section class="grid">
+    <div id="rifas"></div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px 0">Transparência e Regras</h3>
+      <ul style="margin:8px 0 0 18px;line-height:1.5">
+        <li>Todas as rifas possuem <strong>100 números</strong>, sem desconto por quantidade.</li>
+        <li>Pagamento via PIX indicado no WhatsApp. Envio automático dos seus números por mensagem.</li>
+        <li>Quando todos os números estiverem vendidos, o sistema agenda o sorteio para <strong>18:00 do dia seguinte</strong>.</li>
+        <li>Premiações fixas: <strong>1º lugar R$ 500,00</strong> • <strong>2º lugar R$ 200,00</strong>.</li>
+        <li>A arrecadação e o valor destinado à organização são mostrados na tela (arrecadação – prêmios).</li>
+      </ul>
+      <p class="warn" style="margin-top:8px">Obs.: Todos os números estão disponíveis para compra. Quando você efetua uma compra, os números selecionados ficam indisponíveis para outros compradores.</p>
+    </div>
+
+    <div id="publicDrawResults" class="card" style="display:none;">
+      <h3 style="margin:0">🏆 Resultado do Último Sorteio</h3>
+      <div id="publicDrawContent"></div>
+    </div>
+
+    <div class="card depo">
+      <h3 style="margin:0">Depoimentos</h3>
+      <div class="item">"Participei e recebi meus números na hora pelo WhatsApp. Top!" — <strong>Jéssica R.</strong></div>
+      <div class="item">"Site leve e rápido no celular. Acompanhei o sorteio sem dor de cabeça." — <strong>Rafael D.</strong></div>
+      <div class="item">"Transparente: mostra quanto já foi vendido e o prêmio garantido." — <strong>Anderson M.</strong></div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; <span id="year"></span> Pix da Sorte @LeehFerriiOficial</p>
+  </footer>
+</div>
+
+<script src="js/rifa-renderer.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Firebase -->
+<script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>
