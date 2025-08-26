@@ -24,8 +24,6 @@
   html,body{margin:0;background:linear-gradient(180deg,var(--bg),#091434);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
   a{color:var(--accent)}
   header{padding:28px 16px;text-align:center;background:linear-gradient(180deg,#0d224a,rgba(13,34,74,.4));position:sticky;top:0;z-index:10;backdrop-filter:saturate(120%) blur(4px)}
-  .live-indicator{position:absolute;top:15px;left:15px;background:#22c55e;color:white;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:bold;animation:pulse 2s infinite;}
-  @keyframes pulse{0%,100%{opacity:1} 50%{opacity:0.7}}
   header h1{margin:0;font-size:clamp(22px,4vw,32px)}
   header p{margin:6px 0 0 0;opacity:.9}
   .rating{margin-top:8px}
@@ -83,6 +81,31 @@
   .btn-danger{background:var(--danger);color:white}
   .admin-toggle{position:fixed;top:20px;right:20px;background:var(--muted);color:var(--text);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 12px;cursor:pointer;z-index:999;font-size:12px}
   
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  
+  .sorteio-winner {
+    background:linear-gradient(135deg,#FFD700,#FFA500);
+    color:#1a1208;
+    padding:12px;
+    border-radius:12px;
+    margin:8px 0;
+    border:2px solid #ff7a00
+  }
+  
+  .sorteio-public {
+    background:linear-gradient(135deg,var(--ok),#86efac);
+    color:#0a1b0f;
+    border-radius:var(--radius);
+    padding:16px;
+    margin:16px 0;
+    border:2px solid #22c55e;
+    text-align:center
+  }
+  
   .num:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 </style>
 </head>
@@ -127,34 +150,62 @@
     </div>
     
     <div class="card" style="margin-top:16px">
-      <h3>Controles da Rifa</h3>
-      <div style="display:grid;gap:12px;">
-        <button class="btn btn-ghost" onclick="clearPaidNumbers()" style="background:var(--accent);color:#1a1208;">
-          🔄 Limpar Números Pagos
-        </button>
-        <button class="btn btn-danger" onclick="resetRaffle()">
-          🗑️ Resetar Rifa Completa
-        </button>
-        <button class="btn btn-primary" onclick="conductDraw()" style="background:var(--ok);color:#0a1b0f;">
-          🎲 Realizar Sorteio (1º, 2º, 3º)
+      <h3>⚙️ Configurações da Rifa</h3>
+      <div style="display:grid;gap:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="premio1" type="number" placeholder="1º Prêmio (R$)" style="padding:8px;border:1px solid rgba(255,255,255,.3);background:transparent;color:var(--text);border-radius:8px" />
+          <input id="premio2" type="number" placeholder="2º Prêmio (R$)" style="padding:8px;border:1px solid rgba(255,255,255,.3);background:transparent;color:var(--text);border-radius:8px" />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="premio3" type="number" placeholder="3º Prêmio (R$)" style="padding:8px;border:1px solid rgba(255,255,255,.3);background:transparent;color:var(--text);border-radius:8px" />
+          <select id="qtdPremios" style="padding:8px;border:1px solid rgba(255,255,255,.3);background:var(--card);color:var(--text);border-radius:8px">
+            <option value="1">1 Prêmio</option>
+            <option value="2">2 Prêmios</option>
+            <option value="3" selected>3 Prêmios</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="salvarConfiguracoes()" style="background:#4f46e5;color:#ffffff">
+          💾 Salvar Configurações
         </button>
       </div>
     </div>
     
     <div class="card" style="margin-top:16px">
-      <h3>Resultado do Sorteio</h3>
-      <div id="drawResults" style="font-size:16px;line-height:1.6;">
-        <p style="opacity:0.7">Nenhum sorteio realizado ainda</p>
+      <h3>🎮 Ações da Rifa</h3>
+      <div style="display:grid;gap:12px">
+        <button class="btn btn-ghost" onclick="limparTodosNumerosPagos()" style="background:#ffa500;color:#1a1208">
+          🔄 Limpar Todos os Números Pagos
+        </button>
+        <button class="btn btn-danger" onclick="resetarRifaCompleta()">
+          🗑️ Resetar Rifa Completa
+        </button>
+        <button class="btn btn-primary" onclick="realizarSorteio()" style="background:#22c55e;color:#ffffff">
+          🎲 Realizar Sorteio
+        </button>
       </div>
+    </div>
+    
+    <div class="card" style="margin-top:16px">
+      <h3>🗑️ Gerenciar Números Pagos</h3>
+      <div id="numerosPagosLista" style="display:grid;gap:8px;max-height:200px;overflow-y:auto">
+        <p style="opacity:0.7">Nenhum número pago ainda</p>
+      </div>
+    </div>
+    
+    <div class="card" style="margin-top:16px">
+      <h3>🏆 Resultados do Sorteio</h3>
+      <div id="sorteioResults"></div>
     </div>
   </div>
 </div>
 
 <header>
-  <div class="live-indicator">🔴 AO VIVO</div>
   <h1>Pix da Sorte @LeehFerriiOficial — Online e Profissional</h1>
   <p>Sorteio automático às 18h do dia seguinte após esgotar os números.</p>
   <div class="rating">⭐⭐⭐⭐⭐ Avaliação máxima</div>
+  <div id="liveIndicator" style="margin-top:8px;padding:6px 12px;background:#22c55e;border-radius:20px;display:inline-block;font-size:12px;font-weight:bold;animation:pulse 2s infinite">
+    🔴 AO VIVO
+  </div>
 </header>
 
 <div class="container">
@@ -173,11 +224,6 @@
       <p class="warn" style="margin-top:8px">Obs.: Todos os números estão disponíveis para compra. Quando você efetua uma compra, os números selecionados ficam indisponíveis para outros compradores.</p>
     </div>
 
-    <div id="publicDrawResults" class="card" style="display:none;">
-      <h3 style="margin:0">🏆 Resultado do Último Sorteio</h3>
-      <div id="publicDrawContent"></div>
-    </div>
-
     <div class="card depo">
       <h3 style="margin:0">Depoimentos</h3>
       <div class="item">"Participei e recebi meus números na hora pelo WhatsApp. Top!" — <strong>Jéssica R.</strong></div>
@@ -191,10 +237,644 @@
   </footer>
 </div>
 
-<script src="js/rifa-renderer.js"></script>
-<script src="js/app.js"></script>
+<script>
+const WHATSAPP_NUMBER = "5511960671570";
+const PIX_KEY = "11960671570";
+const ADMIN_PASSWORD = "Ccjj9842#";
 
-<!-- Firebase -->
-<script type="module" src="js/firebase-config.js"></script>
+const RIFAS_DATA = [
+  { 
+    id: 1, 
+    nome: "Pix da Sorte Premium", 
+    premios: { primeiro: 500, segundo: 200 },
+    preco: 15, 
+    total: 100 
+  }
+];
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const brl = v => v.toLocaleString('pt-BR',{style:'currency', currency:'BRL'});
+
+let adminOrders = JSON.parse(localStorage.getItem('rifaAdminOrders') || '[]');
+let adminState = JSON.parse(localStorage.getItem('rifaAdminState') || '{"numbers":{},"sorteio":null,"config":{"premios":[500,200,100],"qtdPremios":3}}');
+
+function saveAdminData() {
+  localStorage.setItem('rifaAdminOrders', JSON.stringify(adminOrders));
+  localStorage.setItem('rifaAdminState', JSON.stringify(adminState));
+  localStorage.setItem('rifaPublicState', JSON.stringify(adminState));
+  window.dispatchEvent(new Event('rifaStateChanged'));
+}
+
+function addAdminOrder(numbers, metadata) {
+  const order = {
+    id: Date.now(),
+    numbers: numbers,
+    timestamp: metadata.timestamp,
+    status: 'pending',
+    customerName: metadata.customerName,
+    customerWhatsApp: metadata.customerWhatsApp
+  };
+  
+  numbers.forEach(num => {
+    adminState.numbers[num] = {
+      status: 'pending',
+      orderId: order.id,
+      timestamp: order.timestamp,
+      customerName: metadata.customerName,
+      customerWhatsApp: metadata.customerWhatsApp
+    };
+  });
+  
+  adminOrders.push(order);
+  saveAdminData();
+}
+
+window.addAdminOrder = addAdminOrder;
+
+function toggleAdmin() {
+  const panel = document.getElementById('adminPanel');
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  if(panel.style.display === 'block') {
+    document.getElementById('adminEmail').focus();
+  }
+}
+
+function loginAdmin() {
+  const email = document.getElementById('adminEmail').value;
+  const password = document.getElementById('adminPassword').value;
+  if(password === ADMIN_PASSWORD) {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    updateAdminPanel();
+  } else {
+    alert('Senha incorreta!');
+  }
+}
+
+function logoutAdmin() {
+  document.getElementById('adminLogin').style.display = 'block';
+  document.getElementById('adminContent').style.display = 'none';
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('adminPassword').value = '';
+  toggleAdmin();
+}
+
+function confirmPayment(orderId) {
+  const order = adminOrders.find(o => o.id === orderId);
+  if(order) {
+    order.status = 'confirmed';
+    order.numbers.forEach(num => {
+      adminState.numbers[num] = {
+        status: 'paid',
+        orderId: orderId,
+        timestamp: order.timestamp,
+        customerName: order.customerName,
+        customerWhatsApp: order.customerWhatsApp
+      };
+    });
+    saveAdminData();
+    updateAdminPanel();
+    alert('Pagamento confirmado!');
+  }
+}
+
+function cancelOrder(orderId) {
+  const order = adminOrders.find(o => o.id === orderId);
+  if(order && confirm('Cancelar pedido?')) {
+    order.status = 'cancelled';
+    order.numbers.forEach(num => {
+      if(adminState.numbers[num] && adminState.numbers[num].orderId === orderId) {
+        delete adminState.numbers[num];
+      }
+    });
+    saveAdminData();
+    updateAdminPanel();
+    alert('Pedido cancelado!');
+  }
+}
+
+function updateAdminPanel() {
+  const ordersEl = document.getElementById('adminOrders');
+  const statsEl = document.getElementById('adminStats');
+  const sorteioEl = document.getElementById('sorteioResults');
+  
+  const pendingOrders = adminOrders.filter(o => o.status === 'pending');
+  ordersEl.innerHTML = pendingOrders.length === 0 ? 
+    '<p style="opacity:0.7">Nenhum pedido pendente</p>' :
+    pendingOrders.map(order => `
+      <div class="admin-order">
+        <div class="order-header">
+          <strong>Pedido #${order.id}</strong>
+          <small>${new Date(order.timestamp).toLocaleString('pt-BR')}</small>
+        </div>
+        <div class="order-numbers">
+          ${order.numbers.map(n => `<span class="order-number">${n}</span>`).join('')}
+        </div>
+        <p><strong>Total: ${brl(order.numbers.length * 15)}</strong></p>
+        <p><strong>Cliente:</strong> ${order.customerName} • <strong>WhatsApp:</strong> ${order.customerWhatsApp}</p>
+        <div class="order-actions">
+          <button class="btn btn-success" onclick="confirmPayment(${order.id})">Confirmar</button>
+          <button class="btn btn-danger" onclick="cancelOrder(${order.id})">Cancelar</button>
+        </div>
+      </div>
+    `).join('');
+  
+  const paidNumbers = Object.values(adminState.numbers).filter(n => n.status === 'paid').length;
+  const pendingNumbers = Object.values(adminState.numbers).filter(n => n.status === 'pending').length;
+  const revenue = paidNumbers * 15;
+  
+  statsEl.innerHTML = `
+    <div class="row">
+      <div>Vendidos: <strong>${paidNumbers}/100</strong></div>
+      <div>Pendentes: <strong>${pendingNumbers}</strong></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div>Arrecadação: <strong>${brl(revenue)}</strong></div>
+      <div>Lucro: <strong>${brl(revenue - 700)}</strong></div>
+    </div>
+  `;
+  
+  // Atualizar resultados do sorteio
+  if(adminState.sorteio) {
+    sorteioEl.innerHTML = `
+      <div class="sorteio-winner">
+        <h4 style="margin:0 0 8px 0">🏆 Resultados</h4>
+        <p><strong>🥇 1º Lugar:</strong> #${adminState.sorteio.primeiro.numero} - ${adminState.sorteio.primeiro.nome} (${adminState.sorteio.primeiro.whatsapp})</p>
+        <p><strong>🥈 2º Lugar:</strong> #${adminState.sorteio.segundo.numero} - ${adminState.sorteio.segundo.nome} (${adminState.sorteio.segundo.whatsapp})</p>
+        <p><strong>🥉 3º Lugar:</strong> #${adminState.sorteio.terceiro.numero} - ${adminState.sorteio.terceiro.nome} (${adminState.sorteio.terceiro.whatsapp})</p>
+        <small>Sorteio realizado em: ${new Date(adminState.sorteio.timestamp).toLocaleString('pt-BR')}</small>
+      </div>
+    `;
+  } else {
+    sorteioEl.innerHTML = '<p style="opacity:0.7">Nenhum sorteio realizado ainda</p>';
+  }
+}
+
+// Limpa pedidos pendentes expirados (mais de 30 minutos)
+function limparPedidosExpirados() {
+  const agora = Date.now();
+  const limite = 30 * 60 * 1000; // 30 minutos em ms
+  let mudou = false;
+
+  adminOrders.forEach(order => {
+    if (order.status === 'pending') {
+      const timestampPedido = new Date(order.timestamp).getTime();
+      if (agora - timestampPedido > limite) {
+        order.status = 'cancelled';
+        order.numbers.forEach(num => {
+          if (adminState.numbers[num] && adminState.numbers[num].orderId === order.id) {
+            delete adminState.numbers[num];
+          }
+        });
+        mudou = true;
+      }
+    }
+  });
+
+  if (mudou) {
+    saveAdminData();
+    updateAdminPanel();
+  }
+}
+
+// Novas funções do admin
+function limparNumerosPagos() {
+  if(!confirm('Tem certeza que deseja limpar todos os números pagos? Esta ação não pode ser desfeita.')) return;
+  
+  // Remove apenas números pagos
+  Object.keys(adminState.numbers).forEach(num => {
+    if(adminState.numbers[num].status === 'paid') {
+      delete adminState.numbers[num];
+    }
+  });
+  
+  // Remove pedidos confirmados
+  adminOrders = adminOrders.filter(order => order.status !== 'confirmed');
+  
+  saveAdminData();
+  updateAdminPanel();
+  alert('Números pagos removidos com sucesso!');
+}
+
+function resetarRifaCompleta() {
+  if(!confirm('⚠️ ATENÇÃO: Esta ação irá resetar TODA a rifa (números, pedidos, sorteios). Tem certeza?')) return;
+  if(!confirm('🚨 CONFIRMAÇÃO FINAL: Todos os dados serão perdidos permanentemente. Continuar?')) return;
+  
+  // Reset completo
+  adminState = {numbers: {}, sorteio: null};
+  adminOrders = [];
+  
+  saveAdminData();
+  updateAdminPanel();
+  alert('Rifa resetada completamente!');
+}
+
+function realizarSorteio() {
+  const numerosPagos = Object.keys(adminState.numbers).filter(num => 
+    adminState.numbers[num].status === 'paid'
+  ).map(num => parseInt(num));
+  
+  if(numerosPagos.length < 3) {
+    alert('É necessário ter pelo menos 3 números pagos para realizar o sorteio.');
+    return;
+  }
+  
+  if(!confirm(`Realizar sorteio com ${numerosPagos.length} números pagos?`)) return;
+  
+  // Embaralhar números
+  const shuffled = [...numerosPagos].sort(() => Math.random() - 0.5);
+  
+  const primeiro = shuffled[0];
+  const segundo = shuffled[1];
+  const terceiro = shuffled[2];
+  
+  adminState.sorteio = {
+    primeiro: {
+      numero: primeiro,
+      nome: adminState.numbers[primeiro].customerName,
+      whatsapp: adminState.numbers[primeiro].customerWhatsApp
+    },
+    segundo: {
+      numero: segundo,
+      nome: adminState.numbers[segundo].customerName,
+      whatsapp: adminState.numbers[segundo].customerWhatsApp
+    },
+    terceiro: {
+      numero: terceiro,
+      nome: adminState.numbers[terceiro].customerName,
+      whatsapp: adminState.numbers[terceiro].customerWhatsApp
+    },
+    timestamp: new Date().toISOString()
+  };
+  
+  saveAdminData();
+  updateAdminPanel();
+  alert('🎉 Sorteio realizado com sucesso!');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  limparPedidosExpirados();
+  setInterval(limparPedidosExpirados, 300000); // 5 minutos
+  
+  // Atualização em tempo real mais frequente
+  setInterval(() => {
+    window.dispatchEvent(new Event('rifaStateChanged'));
+  }, 1500); // A cada 1.5 segundos
+});
+
+function copyPixKey() {
+  navigator.clipboard.writeText(PIX_KEY).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copiado!';
+    btn.style.background = 'rgba(34, 197, 94, 0.3)';
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.style.background = 'rgba(0,0,0,.2)';
+    }, 2000);
+  }).catch(() => {
+    alert('Chave PIX: ' + PIX_KEY);
+  });
+}
+
+function renderRifa(data){
+  const rifa = { ...data, vendidos: new Set(), vencedores: null };
+
+  const wrap = document.createElement('div');
+  wrap.className = 'card rifa';
+  wrap.innerHTML = `
+    <div class="row">
+      <h2>${rifa.nome}</h2>
+    </div>
+
+    <div class="share-buttons" style="margin:12px 0; display:flex; gap:10px; flex-wrap: wrap;">
+      <button class="btn btn-ghost share-whatsapp" style="background:#25D366; color:white;">WhatsApp</button>
+      <button class="btn btn-ghost share-facebook" style="background:#1877F2; color:white;">Facebook</button>
+      <button class="btn btn-ghost share-twitter" style="background:#1DA1F2; color:white;">Twitter</button>
+      <button class="btn btn-ghost share-instagram" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); color:white;">Instagram</button>
+      <button class="btn btn-ghost share-tiktok" style="background:#000000; color:white;">TikTok</button>
+    </div>
+
+    <div class="pill">Valor: <strong>${brl(rifa.preco)}</strong></div>
+
+    <div class="meta">
+      <span class="pill" style="background: linear-gradient(135deg, #FFD700, #FFA500); color: #1a1208;">🥇 ${brl(rifa.premios.primeiro)}</span>
+      <span class="pill" style="background: linear-gradient(135deg, #C0C0C0, #A8A8A8); color: #1a1208;">🥈 ${brl(rifa.premios.segundo)}</span>
+    </div>
+    <div class="meta">
+      <span class="pill" id="cap-${rifa.id}"></span>
+      <span class="pill" id="org-${rifa.id}"></span>
+    </div>
+
+    <div class="pix-info">
+      <h4 style="margin:0 0 8px 0;color:#0a1b0f">💳 PIX para Pagamento</h4>
+      <div class="pix-key">
+        <span>${PIX_KEY}</span>
+        <button class="copy-btn" onclick="copyPixKey()">Copiar</button>
+      </div>
+      <p style="margin:8px 0 4px 0;color:#0a1b0f;font-size:13px">
+        ✅ Após pagar, envie comprovante no WhatsApp<br>
+        ⏱️ Números reservados por 30 minutos
+      </p>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot" style="background:#ffffff;border:1px solid #ccc"></span>Disponível</span>
+      <span><span class="dot" style="background:linear-gradient(180deg,var(--accent),var(--accent-2))"></span>Selecionado</span>
+      <span><span class="dot" style="background:#ffa500"></span>Aguardando</span>
+      <span><span class="dot" style="background:#22c55e"></span>Pago</span>
+    </div>
+
+    <div class="row">
+      <div class="status" id="status-${rifa.id}"></div>
+      <div class="total" id="total-${rifa.id}"></div>
+    </div>
+    <div class="progress"><span id="pb-${rifa.id}"></span></div>
+
+    <div id="sorteioPublico-${rifa.id}"></div>
+    
+    <div class="numbers" id="nums-${rifa.id}"></div>
+
+    <div class="toolbar" style="display:grid;gap:10px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <input id="qtd-${rifa.id}" type="number" min="1" max="${rifa.total}" value="1" />
+        <button class="btn btn-ghost" id="gerar-${rifa.id}">Gerar</button>
+      </div>
+      <div style="display:grid;gap:8px;">
+        <input id="nome-${rifa.id}" type="text" placeholder="Seu nome completo" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 10px;color:var(--text)" required />
+        <input id="whatsapp-${rifa.id}" type="tel" placeholder="WhatsApp (11999999999)" style="width:100%;background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:8px 10px;color:var(--text)" required />
+      </div>
+      <button class="btn btn-primary" id="comprar-${rifa.id}">Comprar Números</button>
+    </div>
+  `;
+
+  document.getElementById('rifas').appendChild(wrap);
+
+  const numsEl = wrap.querySelector('#nums-'+rifa.id);
+  const statusEl = wrap.querySelector('#status-'+rifa.id);
+  const totalEl = wrap.querySelector('#total-'+rifa.id);
+  const pbEl = wrap.querySelector('#pb-'+rifa.id);
+  const capEl = wrap.querySelector('#cap-'+rifa.id);
+  const orgEl = wrap.querySelector('#org-'+rifa.id);
+  const qtdEl = wrap.querySelector('#qtd-'+rifa.id);
+
+  const selecionados = new Set();
+
+  for(let i=1;i<=rifa.total;i++){
+    const b = document.createElement('button');
+    b.type='button';
+    b.className='num available';
+    b.textContent = i;
+    b.dataset.n = i;
+    b.addEventListener('click', ()=>{
+      if(b.classList.contains('sold') || b.classList.contains('pending')) return;
+      const n = Number(b.dataset.n);
+      if(selecionados.has(n)){
+        selecionados.delete(n);
+        b.classList.remove('selected');
+        b.classList.add('available');
+      }else{
+        selecionados.add(n);
+        b.classList.remove('available');
+        b.classList.add('selected');
+      }
+      atualizarTotais();
+    });
+    numsEl.appendChild(b);
+  }
+
+  function disponiveis(){
+    const arr=[];
+    numsEl.querySelectorAll('.num.available').forEach(el=> arr.push(Number(el.dataset.n)));
+    return arr;
+  }
+
+  function atualizarStatus(){
+    const vendidos = numsEl.querySelectorAll('.num.sold').length;
+    const pendentes = numsEl.querySelectorAll('.num.pending').length;
+    const disp = numsEl.querySelectorAll('.num.available').length;
+    const pct = Math.round((vendidos / rifa.total)*100);
+    
+    statusEl.textContent = `Disponíveis: ${disp} • Vendidos: ${vendidos} • Aguardando: ${pendentes}`;
+    pbEl.style.width = pct + '%';
+    
+    const arrecadacao = vendidos * rifa.preco;
+    const saldo = arrecadacao - 700;
+    capEl.textContent = `Arrecadação: ${brl(arrecadacao)}`;
+    orgEl.textContent = `Lucro: ${brl(saldo)}`;
+  }
+
+  function atualizarTotais(){
+    const qtd = Number(qtdEl.value)||0;
+    totalEl.textContent = `Selecionados: ${selecionados.size} • Total: ${brl(rifa.preco * Math.max(qtd, selecionados.size||0))}`;
+    atualizarStatus();
+  }
+
+  wrap.querySelector('#gerar-'+rifa.id).addEventListener('click', ()=>{
+    const qtd = Math.max(1, Math.min(Number(qtdEl.value)||1, rifa.total));
+    selecionados.clear();
+    numsEl.querySelectorAll('.num.selected').forEach(el=>{
+      el.classList.remove('selected'); el.classList.add('available');
+    });
+    const disp = disponiveis();
+    if(disp.length < qtd){
+      alert('Quantidade indisponível.');
+      return;
+    }
+    for(let i=0;i<qtd;i++){
+      const idx = Math.floor(Math.random()*disp.length);
+      const n = disp.splice(idx,1)[0];
+      selecionados.add(n);
+      const btn = numsEl.querySelector(`[data-n="${n}"]`);
+      btn.classList.remove('available'); 
+      btn.classList.add('selected');
+    }
+    atualizarTotais();
+  });
+
+  wrap.querySelector('#comprar-'+rifa.id).addEventListener('click', ()=>{
+    const nomeInput = wrap.querySelector('#nome-'+rifa.id);
+    const whatsappInput = wrap.querySelector('#whatsapp-'+rifa.id);
+    const nome = nomeInput.value.trim();
+    const whatsapp = whatsappInput.value.trim();
+
+    if(!nome) {
+      alert('Por favor, informe seu nome completo.');
+      nomeInput.focus();
+      return;
+    }
+
+    if(!whatsapp || !/^\d{10,15}$/.test(whatsapp.replace(/\D/g,''))) {
+      alert('Por favor, informe um número de WhatsApp válido (apenas números, 10 a 15 dígitos).');
+      whatsappInput.focus();
+      return;
+    }
+
+    const qtdDesejada = Math.max(1, Math.min(Number(qtdEl.value)||1, rifa.total));
+    let escolhidos = Array.from(selecionados);
+
+    if(escolhidos.length < qtdDesejada){
+      const faltam = qtdDesejada - escolhidos.length;
+      const disp = disponiveis().filter(n => !selecionados.has(n));
+      if(disp.length < faltam){
+        alert('Números insuficientes.');
+        return;
+      }
+      for(let i=0;i<faltam;i++){
+        const idx = Math.floor(Math.random()*disp.length);
+        escolhidos.push(disp.splice(idx,1)[0]);
+      }
+    }
+
+    escolhidos.forEach(n=>{
+      const el = numsEl.querySelector(`[data-n="${n}"]`);
+      el.classList.remove('available','selected'); 
+      el.classList.add('pending');
+      selecionados.delete(n);
+    });
+
+    if(window.addAdminOrder) {
+      window.addAdminOrder(escolhidos, {
+        timestamp: new Date().toISOString(),
+        customerName: nome,
+        customerWhatsApp: whatsapp
+      });
+    }
+
+    const total = escolhidos.length * rifa.preco;
+    const msg = [
+      `*${rifa.nome}*`,
+      `Números: ${escolhidos.sort((a,b)=>a-b).join(', ')}`,
+      `Qtde: ${escolhidos.length}`,
+      `*Total: ${brl(total)}*`,
+      ``,
+      `🥇 ${brl(rifa.premios.primeiro)} | 🥈 ${brl(rifa.premios.segundo)}`,
+      ``,
+      `PIX: ${PIX_KEY}`,
+      `Envie o comprovante aqui!`
+    ].join('\n');
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+
+    alert('Números reservados! Complete o pagamento via WhatsApp.');
+    atualizarTotais();
+  });
+
+  // Funções dos botões de compartilhamento
+  function shareWhatsApp() {
+    const text = encodeURIComponent(`Participe da rifa *${rifa.nome}*! São 100 números por ${brl(rifa.preco)}, com prêmios de ${brl(rifa.premios.primeiro)} e ${brl(rifa.premios.segundo)}. Compre seu número e boa sorte! Link: ${window.location.href}`);
+    const url = `https://wa.me/?text=${text}`;
+    window.open(url, '_blank');
+  }
+
+  function shareFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    window.open(fbShareUrl, '_blank');
+  }
+
+  function shareTwitter() {
+    const text = encodeURIComponent(`Participe da rifa ${rifa.nome}! Prêmios incríveis e muita sorte. Confira:`);
+    const url = encodeURIComponent(window.location.href);
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+    window.open(twitterUrl, '_blank');
+  }
+
+  function copyLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Link copiado para a área de transferência!');
+    }).catch(() => {
+      alert('Copie o link manualmente: ' + url);
+    });
+  }
+
+  function shareInstagram() {
+    copyLink();
+  }
+
+  function shareTikTok() {
+    copyLink();
+  }
+
+  wrap.querySelector('.share-whatsapp').onclick = shareWhatsApp;
+  wrap.querySelector('.share-facebook').onclick = shareFacebook;
+  wrap.querySelector('.share-twitter').onclick = shareTwitter;
+  wrap.querySelector('.share-instagram').onclick = shareInstagram;
+  wrap.querySelector('.share-tiktok').onclick = shareTikTok;
+
+  // Sistema de atualização em tempo real
+  function loadRifaState() {
+    const savedState = localStorage.getItem('rifaPublicState');
+    if(savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        updateRifaDisplay(state);
+      } catch(e) {}
+    }
+  }
+
+  function updateRifaDisplay(adminState) {
+    if(!adminState || !adminState.numbers) return;
+    
+    Object.keys(adminState.numbers).forEach(numStr => {
+      const num = parseInt(numStr);
+      const numState = adminState.numbers[numStr];
+      const numEl = numsEl.querySelector(`[data-n="${num}"]`);
+      
+      if(numEl && numState) {
+        numEl.classList.remove('available', 'pending', 'sold', 'selected');
+        
+        if(numState.status === 'pending') {
+          numEl.classList.add('pending');
+        } else if(numState.status === 'paid') {
+          numEl.classList.add('sold');
+        } else {
+          numEl.classList.add('available');
+        }
+      }
+    });
+    
+    // Atualizar resultados do sorteio na página pública
+    const sorteioPublicoEl = wrap.querySelector(`#sorteioPublico-${rifa.id}`);
+    if(adminState.sorteio && sorteioPublicoEl) {
+      sorteioPublicoEl.innerHTML = `
+        <div class="sorteio-public">
+          <h4 style="margin:0 0 12px 0">🏆 RESULTADOS DO SORTEIO</h4>
+          <div style="display:grid;gap:8px">
+            <div><strong>🥇 1º Lugar (${brl(500)}):</strong> #${adminState.sorteio.primeiro.numero} - ${adminState.sorteio.primeiro.nome}</div>
+            <div><strong>🥈 2º Lugar (${brl(200)}):</strong> #${adminState.sorteio.segundo.numero} - ${adminState.sorteio.segundo.nome}</div>
+            <div><strong>🥉 3º Lugar:</strong> #${adminState.sorteio.terceiro.numero} - ${adminState.sorteio.terceiro.nome}</div>
+          </div>
+          <small style="display:block;margin-top:8px">Sorteio realizado em: ${new Date(adminState.sorteio.timestamp).toLocaleString('pt-BR')}</small>
+        </div>
+      `;
+    } else if(sorteioPublicoEl) {
+      sorteioPublicoEl.innerHTML = '';
+    }
+    
+    setTimeout(atualizarTotais, 100);
+  }
+
+  window.addEventListener('storage', function(e) {
+    if(e.key === 'rifaPublicState') {
+      loadRifaState();
+    }
+  });
+
+  window.addEventListener('rifaStateChanged', loadRifaState);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(loadRifaState, 500);
+  });
+
+  setInterval(loadRifaState, 1500); // Atualização mais frequente - a cada 1.5 segundos
+
+  atualizarTotais();
+}
+
+RIFAS_DATA.forEach(renderRifa);
+</script>
 </body>
 </html>
